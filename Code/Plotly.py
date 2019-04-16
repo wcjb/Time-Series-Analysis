@@ -1,5 +1,3 @@
-
-
 # Plotly Express使用
 #%%
 import plotly_express as px
