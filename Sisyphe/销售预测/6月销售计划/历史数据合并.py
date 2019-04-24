@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from PyEMD import EMD
 from tqdm import tqdm
 import os
+import pysnooper
 import dask.dataframe as dd
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -27,25 +28,29 @@ ftype = {
     columns[10]: 'float32'
 }
 #%%
+#@pysnooper.snoop()
 def function(path):
-      data = pd.DataFrame(columns=columns)
-      reader = pd.read_csv(
-          path,
-          encoding='utf-8',
-          engine='python',
-          memory_map=True,
-          chunksize=lines_in_chunk)
-      for chunk in tqdm(reader):
-          # 需要注意的是，这里的sort仅仅只是对合并的表排序而不是对各个表内的数据排序
-            data = pd.concat([data, chunk],axis=0,sort=True)
-      return data
+    data = pd.DataFrame(columns=columns)
+    reader = pd.read_csv(
+        path,
+        encoding='utf-8',
+        engine='python',
+        memory_map=True,
+        chunksize=lines_in_chunk)
+    for chunk in tqdm(reader):
+        # 需要注意的是，这里的sort仅仅只是对合并的表排序而不是对各个表内的数据排序
+        data = pd.concat([data, chunk],axis=0,sort=True)
+    for key,value in tqdm(ftype.items()):
+        data[key] = data[key].astype(value)
+    return data
 #%%
 df = pd.DataFrame()
 for i in Path:
     df = pd.concat([df,function(i)])
-for key,value in tqdm(ftype.items()):
-    df[key] = df[key].astype(value)
 df.info(memory_usage='deep')
+# 删除数据集中四级分类为'ROOT'的不规范数据
+df.drop(index=df[df['四级分类'] == 'ROOT'].index, inplace=True)
+
 print('数据文件保存中。。。。。')
-df.to_csv('E:/历史销售数据/历史销售数据.csv')
+df.to_csv('E:/历史销售数据/HistoryData.csv',index=False)
 
