@@ -74,8 +74,8 @@ def Merge(path):
       dropdf = function_drop(path)
       print('格式错误数据已清洗完毕！')
       datastep = pd.concat([data,dropdf])
-      for i in tqdm(ftype):
-            datastep[i] = datastep[i].astype(ftype[i])
+      # for i in tqdm(ftype):
+      #       datastep[i] = datastep[i].astype(ftype[i])
       print('正在将数据保存到本地。。。。。')
       if path[-8:-4] == '2017':
             outpath = path[:-8]+'2017.csv'
@@ -84,12 +84,11 @@ def Merge(path):
       datastep.to_csv(outpath,index=False)
       datastep.info(memory_usage='deep')
       print('已合并数据集，并保存！')
-      return datastep
-
+      return datastep  
 if __name__ == '__main__':
       for i in range(2):    
             if i==0:
                   print('正在处理2017年数据:') 
             else:
                   print('正在处理2018年数据:')
-            Merge(Path[i])
+            data = Merge(Path[i])
