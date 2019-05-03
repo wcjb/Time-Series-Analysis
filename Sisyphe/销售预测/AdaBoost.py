@@ -130,7 +130,9 @@ class AdaBoost:
                 if os.path.exists(lstm_path_02):
                     with tf.device(self.DEVICE):
                         try:
-                            lstm_model = load_model(lstm_path_02,custom_objects=None,compile=True)
+                            lstm_model = load_model(lstm_path_02,
+                                                    custom_objects=None,
+                                                    compile=True)
                             lstm_history = lstm_model.fit(timeseries['time_x'].reshape(-1,1,self.DIM),timeseries['time_y'].reshape(-1,self.DIM),shuffle=False,validation_data=validation_data,epochs=self.GOONEPOCH,batch_size=self.BATCH_SIZE,verbose=self.VERBOSE)
                             lstm_model.save(lstm_path_02,overwrite=True,include_optimizer=True)
                             return lstm_model
@@ -140,7 +142,10 @@ class AdaBoost:
                     with tf.device(self.DEVICE):
                         try:
                             lstm_model = Sequential()
-                            lstm_model.add(LSTM(210,kernel_regularizer=regularizer,bias_regularizer=regularizer,input_shape=(1,self.DIM)))
+                            lstm_model.add(LSTM(210, 
+                                                kernel_regularizer=regularizer,
+                                                bias_regularizer=regularizer,
+                                                input_shape=(1,self.DIM)))
                             lstm_model.add(Dense(units=77,kernel_regularizer=regularizers.l2(self.RATE),bias_regularizer=regularizers.l2(self.RATE),activation='relu'))
                             lstm_model.add(Dense(units=self.DIM,kernel_regularizer=regularizer,bias_regularizer=regularizer,activation='tanh'))
                             lstm_model.compile(loss='mean_squared_error',optimizer='adam')
